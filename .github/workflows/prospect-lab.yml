@@ -1,0 +1,42 @@
+name: Prospect Intelligence Lab
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 13 * * 1"
+  push:
+    branches: ["experiment/prospect-intelligence-lab"]
+    paths:
+      - "scripts/prospect_lab.py"
+      - "data/prospects.csv"
+      - ".github/workflows/prospect-lab.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prospect-intelligence-lab
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate Python syntax
+        run: python -m py_compile scripts/prospect_lab.py
+      - name: Run prospect research checks
+        run: python scripts/prospect_lab.py
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: prospect-intelligence-lab-report
+          path: reports/
+          if-no-files-found: error
+          retention-days: 14
