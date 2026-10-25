@@ -8,6 +8,7 @@ on:
     branches: ["experiment/prospect-intelligence-lab"]
     paths:
       - "scripts/prospect_lab.py"
+      - "tests/test_prospect_lab.py"
       - "data/prospects.csv"
       - ".github/workflows/prospect-lab.yml"
 
@@ -31,6 +32,8 @@ jobs:
           python-version: "3.12"
       - name: Validate Python syntax
         run: python -m py_compile scripts/prospect_lab.py
+      - name: Run automated tests
+        run: python -m unittest discover -s tests -v
       - name: Run prospect research checks
         run: python scripts/prospect_lab.py
       - name: Upload reports
